@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import type { Chip, Protocol, ProtocolLocation, ProtocolSegment } from '../backends/common';
-import type { Host } from '../application';
+import type { Host } from '../host';
 import type { Draft } from '../draft';
 
 import ControlUnit from './control';
@@ -12,6 +12,9 @@ import * as Input from './input';
 
 import LocalNotificationUnit from './local-notification';
 import * as LocalNotification from './local-notification';
+
+import RotaryValveUnit from './rotary-valve';
+import * as RotaryValve from './rotary-valve';
 
 import TimerUnit from './timer';
 import * as Timer from './timer';
@@ -92,6 +95,7 @@ export interface SegmentData {
   [Control.namespace]: Control.SegmentData;
   [Input.namespace]?: Input.SegmentData;
   [LocalNotification.namespace]?: LocalNotification.SegmentData;
+  [RotaryValve.namespace]?: RotaryValve.SegmentData;
   [Timer.namespace]?: Timer.SegmentData;
 }
 
@@ -120,13 +124,15 @@ export interface Unit<Code, Matrix> {
 //> Units
 
 export const Units = [
-  [Control.namespace, ControlUnit],
+  // [Control.namespace, ControlUnit],
   [Input.namespace, InputUnit],
   [LocalNotification.namespace, LocalNotificationUnit],
+  [RotaryValve.namespace, RotaryValveUnit],
   [Timer.namespace, TimerUnit]
 ] as [
-  [typeof Control.namespace, Unit<Control.Code, Control.Matrix>],
+  // [typeof Control.namespace, Unit<Control.Code, Control.Matrix>],
   [typeof Input.namespace, Unit<never, never>],
   [typeof LocalNotification.namespace, Unit<never, never>],
+  [typeof RotaryValve.namespace, Unit<never, never>],
   [typeof Timer.namespace, Unit<never, never>]
 ];

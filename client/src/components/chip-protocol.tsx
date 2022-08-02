@@ -2,7 +2,7 @@ import * as React from 'react';
 import seqOrd from 'seq-ord';
 
 import { analyzeProtocol } from '../analysis';
-import { Host } from '../application';
+import { Host } from '../host';
 import { ChipId } from '../backends/common';
 import { formatAbsoluteTime } from '../format';
 import { Units } from '../units';
@@ -49,7 +49,7 @@ export class ChipProtocol extends React.Component<ChipProtocolProps, {}> {
     let currentSegmentEndTime = currentSegmentAnalysis.timeRange![1];
     let currentProgress = lastEntry.processState.progress + (
       !lastEntry.paused
-        ? (Date.now() - lastEntry.time) / currentSegment.data.timer!.duration
+        ? (Date.now() - lastEntry.time) / (currentSegment.data.timer?.duration ?? 0)
         : 0
     );
 

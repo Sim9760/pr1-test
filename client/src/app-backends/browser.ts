@@ -240,7 +240,7 @@ export class BrowserAppBackend implements AppBackend {
         }
 
         case 'user-filesystem': {
-          let handle = await updatedDraftEntry.location.handle.getFileHandle('main.yml');
+          let handle = await updatedDraftEntry.location.handle.getFileHandle(updatedDraftEntry.location.mainFilePath);
           let writable = await handle.createWritable();
 
           await writable.write(primitive.source);
