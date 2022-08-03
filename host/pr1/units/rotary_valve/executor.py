@@ -1,10 +1,12 @@
 import asyncio
-from serial import Serial
 import time
+from threading import Thread
 
-from . import namespace
-from ..base import BaseExecutor
+from serial import Serial
+
 from ...util import schema as sc
+from ..base import BaseExecutor
+from . import namespace
 
 
 schema = sc.Schema({
@@ -20,43 +22,114 @@ class Executor(BaseExecutor):
     self._conf = schema.transform(conf)
     self._host = host
 
-    self._driver = Driver(self._conf)
+    self._driver = Driver(address=self._conf['port'])
 
   async def initialize(self):
     await self._driver.initialize()
 
+  async def destroy(self):
+    await self._driver.destroy()
+
 
 class Driver:
-  def __init__(self, conf):
-    self._conf = conf
+  def __init__(self, *, address):
+    self._address = address
+    self._channel = "_"
+
+    self._busy = False
+    self._shutdown = False
     self._serial = None
 
-    self._query_active = False
-    self._query_data = None
+    self._query_future = None
+    self._task_future = None
 
-  @property
-  def _channel(self):
-    return self._conf.get('address', '1')
+    loop = asyncio.get_event_loop()
+
+    def thread():
+      while not self._shutdown:
+        if self._query_future or self._task_future:
+          data = self._serial.readline()
+
+          if data:
+            was_busy = self._busy
+            is_busy = self._is_busy(data)
+
+            if self._task_future and was_busy and (not is_busy):
+              loop.call_soon_threadsafe(self._task_future.set_result, data)
+              self._task_future = None
+            else:
+              loop.call_soon_threadsafe(self._query_future.set_result, data)
+              self._query_future = None
+
+    self._thread = Thread(target=thread)
+
 
   async def initialize(self):
-    self._serial = Serial(self._conf['port'], timeout=0.05)
+    self._serial = Serial(self._address, timeout=0.05)
+    self._thread.start()
 
-    # await self.home()
+    await self._query("!502")
+
+  async def destroy(self):
+    self._shutdown = True
+    self._thread.join()
+
+
+  async def execute(self, sequence):
+    done = False
+    # prev_rotation_count = 0
+
+    # available = 0
+    # future = None
+
+    # class Iterator:
+    #   async def __anext__(self):
+    #     nonlocal future
+
+    #     if available > 0:
+    #       available -= 1
+    #     else:
+    #       future = asyncio.Future()
+    #       await future
+    #       future = None
+
+    async def observe():
+      while not done:
+        await asyncio.sleep(0.1)
+        rotation_count = await self._query("?17", dtype=int)
+        print(rotation_count)
+
+    async def run():
+      nonlocal done
+
+      await self._run("".join([f"b{value}" if (index % 2) < 1 else f"M{value}" for index, value in enumerate(sequence)]) + "R")
+      done = True
+
+    await asyncio.gather(observe(), run())
 
   async def get_unique_id(self):
-    self._send("?9000")
-    return self._process(await self._accept(query=True))
+    return await self._query("?9000")
+
+  async def get_valve(self):
+    return await self._query("?6", dtype=int)
 
   async def home(self):
-    self._send("ZR")
-
-    await self._accept(query=True)
-    await self._accept(query=False)
+    await self._run("ZR")
 
   async def rotate(self, valve):
-    self._send(f"b{valve}R")
-    await self._accept(query=True)
-    await self._accept(query=False)
+    await self._run(f"b{valve}R")
+
+
+  async def _query(self, command, *, dtype = None):
+    while self._query_future:
+      await self._query_future
+
+    self._send(command)
+    self._query_future = asyncio.Future()
+    return self._process(await self._query_future, dtype=dtype)
+
+  def _is_busy(self, data):
+    return (data[2] & (1 << 5)) < 1
 
   def _process(self, data, dtype = None):
     payload = data[2:-3]
@@ -71,35 +144,22 @@ class Driver:
     else:
       result = response
 
+    self._busy = busy
+
     return result
+
+  async def _run(self, command):
+    while self._task_future:
+      await self._task_future
+
+    await self._query(command)
+
+    self._task_future = asyncio.Future()
+    self._process(await self._task_future)
 
   def _send(self, command):
     print(f"Command: /{self._channel}{command}")
     self._serial.write(f"/{self._channel}{command}\r".encode("utf-8"))
-
-  async def _accept(self, *, query):
-    def func():
-      while True:
-        if query and self._query_data:
-          return self._query_data
-
-        data = self._serial.readline()
-
-        if data:
-          if (not query) and self._query_active:
-            self._query_data = data
-
-          return data
-
-    self._query_active = query
-
-    loop = asyncio.get_event_loop()
-    data = await loop.run_in_executor(None, func)
-
-    if query:
-      self._query_active = False
-
-    return data
 
 
 if __name__ == "__main__":
@@ -108,9 +168,24 @@ if __name__ == "__main__":
   }, host=None)
 
   async def main():
-    await ex.initialize()
+    try:
+      await ex.initialize()
 
-    await ex._driver.rotate(4)
-    await ex._driver.rotate(5)
+      dr = ex._driver
 
-  asyncio.run(main())
+      # print(await asyncio.gather(
+      #   dr.get_unique_id(),
+      #   dr.get_unique_id(),
+      #   dr.get_unique_id()
+      # ))
+
+      # await dr.home()
+
+      print("Over")
+    except KeyboardInterrupt:
+      pass
+    finally:
+      await ex.destroy()
+
+  loop = asyncio.get_event_loop()
+  loop.run_until_complete(main())
