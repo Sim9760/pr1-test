@@ -28,7 +28,14 @@ jobs:
           npm install
           npm run build
           cd -
-      - run: ./app/server/build-windows.sh
+      - run: cd app/server
+      - run: python -m venv env
+      - run: source env/Scripts/activate
+      - run: python setup.py install
+      - run: pip install ../../host
+      - run: pyinstaller --noconfirm main.spec
+      - run: deactivate
+      - run: cd -
       - run: |
           cd app/electron
           npm install
