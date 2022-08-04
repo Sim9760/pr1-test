@@ -4,12 +4,14 @@ module.exports = {
       'tmp/host'
     ],
     ignore: [
-      /^renderer\.js$/,
       /^tmp$/
     ],
     name: 'PR–1'
   },
   makers: [
-    { name: '@electron-forge/maker-zip' }
+    { name: '@electron-forge/maker-dmg' },
+    { name: '@electron-forge/maker-zip',
+      platforms: ['darwin', 'linux'] },
+    { name: '@electron-forge/maker-squirrel' }
   ]
 }

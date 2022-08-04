@@ -39,7 +39,8 @@ jobs:
           npm install
           npm run build
         working-directory: app/electron
-      - uses: actions/upload-artifact@v3
-        with:
-          name: build-windows
-          path: app/electron/out/make/zip/**/*.zip
+      - run: tree app/electron/out
+      # - uses: actions/upload-artifact@v3
+      #   with:
+      #     name: build-windows
+      #     path: app/electron/out/make/zip/**/*.zip
