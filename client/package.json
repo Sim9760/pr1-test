@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "main": "dist/index.js",
   "scripts": {
+    "build": "npm run build:css && npm run build:js",
     "build:js": "node build.js",
     "build:js:watch": "node build.js --watch",
     "build:css": "sass styles/main.scss:lib/styles.css --no-source-map",
