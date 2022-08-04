@@ -23,11 +23,13 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: '16'
-      - run: |
+      - name: Build the client
+        run: |
           npm install
           npm run build
         working-directory: client
-      - run: |
+      - name: Build the server
+        run: |
           python -m venv env
           ./env/Scripts/activate
           python setup.py install
@@ -35,7 +37,8 @@ jobs:
           pyinstaller --noconfirm main.spec
           deactivate
         working-directory: app/server
-      - run: |
+      - name: Build and package the app
+        run: |
           npm install
           npm run build
         working-directory: app/electron
