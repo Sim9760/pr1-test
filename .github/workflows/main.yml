@@ -28,14 +28,18 @@ jobs:
           npm install
           npm run build
           cd -
-      - run: cd app/server
       - run: python -m venv env
+        working-directory: app/server
       - run: ./env/Scripts/activate
+        working-directory: app/server
       - run: python setup.py install
+        working-directory: app/server
       - run: pip install ../../host
+        working-directory: app/server
       - run: pyinstaller --noconfirm main.spec
+        working-directory: app/server
       - run: deactivate
-      - run: cd -
+        working-directory: app/server
       - run: |
           cd app/electron
           npm install
