@@ -11,6 +11,7 @@ import 'material-symbols';
 
 export { Application } from './application';
 export { MessageBackend } from './backends/message';
+export { default as WebsocketBackend } from './backends/websocket';
 export { Startup } from './startup';
 export { React, ReactDOM };
 

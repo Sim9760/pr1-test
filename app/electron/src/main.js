@@ -221,9 +221,9 @@ class HostWindow {
 
     if ((hostSettings.backendOptions.type === 'internal') && !this.app.internalHost) {
       this.app.internalHost = new InternalHost();
-    }
 
-    this.app.internalHost.addClient(this.window);
+      // this.app.internalHost.addClient(this.window);
+    }
   }
 }
 
@@ -273,8 +273,7 @@ class InternalHost {
     this.process = childProcess.spawn(
       app.isPackaged
         ? path.join(process.resourcesPath, 'host/main')
-        : path.join(__dirname, '../tmp/host/main'),
-      ['--local']
+        : path.join(__dirname, '../tmp/host/main')
     );
 
     this.process.stderr.pipe(process.stderr);

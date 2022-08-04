@@ -84,7 +84,7 @@ class App:
           'write_config': False
         },
         **({ 'remote': {
-          'hostname': "127.0.0.1",
+          'hostname': "localhost",
           'port': 4567
         } } if not local else dict()),
         'version': self.version

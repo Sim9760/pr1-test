@@ -1,4 +1,4 @@
-import { Application, MessageBackend, React, ReactDOM, Startup } from 'pr1-client';
+import { Application, MessageBackend, React, ReactDOM, WebsocketBackend } from 'pr1-client';
 import 'pr1-client/dist/index.css';
 
 
@@ -87,7 +87,11 @@ class ElectronAppBackend {
 
   async createBackend(options) {
     if (options.type === 'internal') {
-      return new InternalBackend();
+      return new WebsocketBackend({
+        address: 'localhost',
+        port: 4567,
+        secure: false
+      });
     }
 
     return null;
