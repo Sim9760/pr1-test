@@ -24,27 +24,21 @@ jobs:
         with:
           node-version: '16'
       - run: |
-          cd client
           npm install
           npm run build
-          cd -
-      - run: python -m venv env
-        working-directory: app/server
-      - run: ./env/Scripts/activate
-        working-directory: app/server
-      - run: python setup.py install
-        working-directory: app/server
-      - run: pip install ../../host
-        working-directory: app/server
-      - run: pyinstaller --noconfirm main.spec
-        working-directory: app/server
-      - run: deactivate
+        working-directory: client
+      - run: |
+          python -m venv env
+          ./env/Scripts/activate
+          python setup.py install
+          pip install ../../host
+          pyinstaller --noconfirm main.spec
+          deactivate
         working-directory: app/server
       - run: |
-          cd app/electron
           npm install
           npm run build
-          cd -
+        working-directory: app/electron
       - uses: actions/upload-artifact@v3
         with:
           name: build-windows
