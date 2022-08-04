@@ -14,8 +14,11 @@ class Parser(BaseParser):
 
   def handle_segment(self, data_segment):
     if 'rotate_valve' in data_segment:
-      valve, _ = data_segment['rotate_valve']
-      valve = sc.ParseType(int).transform(valve)
+      raw_valve, _ = data_segment['rotate_valve']
+      valve = sc.ParseType(int).transform(raw_valve)
+
+      if not (1 <= valve <= 12):
+        raise raw_valve.error("Invalid valve")
 
       return {
         namespace: { 'valve': valve }

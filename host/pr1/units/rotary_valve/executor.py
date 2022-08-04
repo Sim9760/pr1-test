@@ -1,6 +1,7 @@
 import asyncio
 import time
 from threading import Thread
+import uuid
 
 from serial import Serial
 
@@ -11,10 +12,10 @@ from . import namespace
 
 schema = sc.Schema({
   # 'address': sc.Optional(sc.Use(lambda x: ('0' <= x <= '9') or ('A' <= x <= 'F'), "Invalid address")), # To be fixed
-  'address': sc.Optional(str),
-  'fast': sc.Optional(sc.Transform(bool, str)),
-  'port': str,
-  'valve_count': sc.Optional(sc.Transform(int, sc.Or('4', '6', '8', '10', '12')))
+  # 'address': sc.Optional(str),
+  # 'fast': sc.Optional(sc.Transform(bool, str)),
+  'mock': sc.ParseType(bool),
+  'port': str
 })
 
 class Executor(BaseExecutor):
@@ -22,7 +23,7 @@ class Executor(BaseExecutor):
     self._conf = schema.transform(conf)
     self._host = host
 
-    self._driver = Driver(address=self._conf['port'])
+    self._driver = Driver(address=self._conf['port']) if not self._conf['mock'] else MockDriver()
 
   async def initialize(self):
     await self._driver.initialize()
@@ -31,10 +32,37 @@ class Executor(BaseExecutor):
     await self._driver.destroy()
 
 
+class MockDriver:
+  def __init__(self):
+    self._valve = 1
+
+  async def initialize(self):
+    await self.home()
+
+  async def destroy(self):
+    pass
+
+  async def rotate(self, valve):
+    await asyncio.sleep(1)
+    self._valve = valve
+
+  async def get_unique_id(self):
+    return str(uuid.uuid4()).upper()
+
+  async def get_valve(self):
+    return self._valve
+
+  async def get_valve_count(self):
+    return 12
+
+  async def home(self):
+    await asyncio.sleep(2)
+
+
 class Driver:
-  def __init__(self, *, address):
+  def __init__(self, *, address, channel = "_"):
     self._address = address
-    self._channel = "_"
+    self._channel = channel
 
     self._busy = False
     self._shutdown = False
@@ -69,6 +97,7 @@ class Driver:
     self._thread.start()
 
     await self._query("!502")
+    await self.home()
 
   async def destroy(self):
     self._shutdown = True
@@ -112,6 +141,9 @@ class Driver:
 
   async def get_valve(self):
     return await self._query("?6", dtype=int)
+
+  async def get_valve_count(self):
+    return await self._query("?801", dtype=int)
 
   async def home(self):
     await self._run("ZR")
