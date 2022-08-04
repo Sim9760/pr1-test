@@ -1,21 +1,5 @@
 on: push
 jobs:
-  # build-ubuntu:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - uses: actions/setup-node@v2
-  #       with:
-  #         node-version: '16'
-  #     - run: npm install --prefix client
-  #     - run: npm run --prefix client build
-  #     - run: ./app/server/build.sh
-  #     - run: npm install --prefix app/electron
-  #     - run: npm run --prefix app/electron build
-  #     - uses: actions/upload-artifact@v3
-  #       with:
-  #         name: build-ubuntu
-  #         path: app/electron/out/make/zip/**/*.zip
   build-windows:
     runs-on: windows-latest
     steps:
@@ -42,9 +26,7 @@ jobs:
           npm install
           npm run build
         working-directory: app/electron
-      - run: ls app/electron/out/make
-      - run: ls app/electron/out/make/squirrel.windows
       - uses: actions/upload-artifact@v3
         with:
           name: build-windows
-          path: app/electron/out/make/squirrel.windows/*
+          path: app/electron/out/make/squirrel.windows/x86/*

@@ -14,8 +14,7 @@ schema = sc.Schema({
   # 'address': sc.Optional(sc.Use(lambda x: ('0' <= x <= '9') or ('A' <= x <= 'F'), "Invalid address")), # To be fixed
   # 'address': sc.Optional(str),
   # 'fast': sc.Optional(sc.Transform(bool, str)),
-  'mock': sc.ParseType(bool),
-  'port': str
+  'port': sc.Optional(str)
 })
 
 class Executor(BaseExecutor):
@@ -23,7 +22,7 @@ class Executor(BaseExecutor):
     self._conf = schema.transform(conf)
     self._host = host
 
-    self._driver = Driver(address=self._conf['port']) if not self._conf['mock'] else MockDriver()
+    self._driver = Driver(address=self._conf['port']) if 'port' in self._conf else MockDriver()
 
   async def initialize(self):
     await self._driver.initialize()
