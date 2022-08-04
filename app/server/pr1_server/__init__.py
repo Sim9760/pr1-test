@@ -56,7 +56,7 @@ class App:
   def __init__(self, *, local):
     # Create data directory if missing
 
-    self.data_dir = Path(appdirs.user_data_dir("PR-1", "Hsn"))
+    self.data_dir = Path(appdirs.user_data_dir("PR-1", "Adaptyv"))
     self.data_dir.mkdir(exist_ok=True, parents=True)
 
 

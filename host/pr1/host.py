@@ -85,20 +85,20 @@ class Host:
 
     logger.debug("Initialized executors")
 
-    for path in self.chips_dir.iterdir():
-      if not path.name.startswith("."):
-        chip = Chip.unserialize(path, units=self.units)
+    # for path in self.chips_dir.iterdir():
+    #   if not path.name.startswith("."):
+    #     chip = Chip.unserialize(path, units=self.units)
 
-        for matrix in chip.matrices.values():
-          matrix.initialize(chip=chip, host=self)
+    #     for matrix in chip.matrices.values():
+    #       matrix.initialize(chip=chip, host=self)
 
-        chip.runners = dict()
+    #     chip.runners = dict()
 
-        for namespace, unit in self.units.items():
-          if hasattr(unit, 'Runner'):
-            chip.runners[namespace] = unit.Runner(chip=chip, host=self)
+    #     for namespace, unit in self.units.items():
+    #       if hasattr(unit, 'Runner'):
+    #         chip.runners[namespace] = unit.Runner(chip=chip, host=self)
 
-        self.chips[chip.id] = chip
+    #     self.chips[chip.id] = chip
 
     # if len(self.chips) < 1:
     #   # debug

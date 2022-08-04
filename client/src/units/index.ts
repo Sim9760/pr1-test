@@ -124,13 +124,13 @@ export interface Unit<Code, Matrix> {
 //> Units
 
 export const Units = [
-  // [Control.namespace, ControlUnit],
+  [Control.namespace, ControlUnit],
   [Input.namespace, InputUnit],
   [LocalNotification.namespace, LocalNotificationUnit],
   [RotaryValve.namespace, RotaryValveUnit],
   [Timer.namespace, TimerUnit]
 ] as [
-  // [typeof Control.namespace, Unit<Control.Code, Control.Matrix>],
+  [typeof Control.namespace, Unit<Control.Code, Control.Matrix>],
   [typeof Input.namespace, Unit<never, never>],
   [typeof LocalNotification.namespace, Unit<never, never>],
   [typeof RotaryValve.namespace, Unit<never, never>],

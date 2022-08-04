@@ -79,7 +79,7 @@ export class ViewChip extends React.Component<ViewChipProps, ViewChipState> {
           <BarNav
             entries={[
               { id: 'protocol', label: 'Protocol', icon: 'receipt_long', disabled: !this.chip.master },
-              // { id: 'control', label: 'Valve control', icon: 'tune' },
+              { id: 'control', label: 'Valve control', icon: 'tune' },
               { id: 'settings', label: 'Settings', icon: 'settings' },
               { id: 'history', label: 'History', icon: 'history', disabled: true }
             ]}

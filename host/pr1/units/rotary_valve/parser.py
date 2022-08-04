@@ -6,7 +6,6 @@ from ...util import schema as sc
 class Parser(BaseParser):
   def __init__(self, parent):
     self._parent = parent
-    print(parent)
 
   def parse_block(self, data_block):
     if 'rotate_valve' in data_block:
