@@ -30,7 +30,7 @@ jobs:
           cd -
       - run: cd app/server
       - run: python -m venv env
-      - run: source env/Scripts/activate
+      - run: ./env/Scripts/activate
       - run: python setup.py install
       - run: pip install ../../host
       - run: pyinstaller --noconfirm main.spec
