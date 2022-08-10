@@ -2,6 +2,7 @@ import regex
 
 from . import namespace
 from ..base import BaseParser
+from ...util import schema as sc
 from ...util.parser import UnclassifiedExpr, interpolate
 from ...reader import LocatedError, LocatedValue
 
@@ -14,6 +15,7 @@ class Parser(BaseParser):
   def handle_segment(self, data_block):
     if 'duration' in data_block:
       raw_expr, context = data_block['duration']
+      sc.Schema(str).validate(raw_expr)
 
       return {
         namespace: { 'duration': parse_duration(raw_expr, context) }
@@ -40,10 +42,7 @@ def parse_duration(raw_expr, context):
       except Exception as e:
         raise raw_expr.error(e.args[0])
 
-    evaluated = python_expr.evaluate({
-      'dur': dur
-    })
-
+    evaluated = python_expr.evaluate({ 'dur': dur })
     duration = evaluated.value
 
     if (not isinstance(duration, float)) and (not isinstance(duration, int)):

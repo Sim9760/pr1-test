@@ -43,19 +43,27 @@ class Parsers(BaseParser):
 
 
   def parse_block(self, data_block):
+    claim_result = None
+
     for namespace, parser in self.parsers.items():
       parser_result = parser.parse_block(data_block)
 
       if parser_result:
+        if claim_result:
+          raise LocatedValue.create_error("Block claimed multiple times", data_block)
+
         if isinstance(parser_result, tuple):
           parser_claim, parser_claim_namespace = parser_result
         else:
           parser_claim = parser_result
           parser_claim_namespace = namespace
 
-        return parser_claim, parser_claim_namespace
+        claim_result = (parser_claim, parser_claim_namespace)
 
-    return None
+        if parser_claim['role'] != 'process':
+          break
+
+    return claim_result
 
   def enter_block(self, data_block):
     for parser in self.parsers.values():

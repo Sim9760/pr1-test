@@ -65,7 +65,7 @@ export class TextEditor extends React.Component<TextEditorProps> {
         minimap: { enabled: false },
         occurrencesHighlight: false,
         renderWhitespace: 'trailing',
-        scrollBeyondLastLine: false,
+        // scrollBeyondLastLine: false,
         selectionHighlight: false,
         tabSize: 2,
         overflowWidgetsDomNode: this.refWidgetContainer.current!,

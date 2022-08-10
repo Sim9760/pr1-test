@@ -47,10 +47,12 @@ export class ChipProtocol extends React.Component<ChipProtocolProps, {}> {
     let currentSegmentAnalysis = analysis.segments[lastEntry.segmentIndex];
 
     let currentSegmentEndTime = currentSegmentAnalysis.timeRange![1];
-    let currentProgress = lastEntry.processState.progress + (
-      !lastEntry.paused
-        ? (Date.now() - lastEntry.time) / (currentSegment.data.timer?.duration ?? 0)
-        : 0
+    let currentProgress = Math.min(
+      lastEntry.processState.progress + (
+        !lastEntry.paused
+          ? (Date.now() - lastEntry.time) / (currentSegment.data.timer?.duration ?? 0)
+          : 0
+      ), 1
     );
 
     let features = Units

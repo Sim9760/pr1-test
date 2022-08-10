@@ -55,7 +55,7 @@ class MockDriver:
     return 12
 
   async def home(self):
-    await asyncio.sleep(2)
+    await asyncio.sleep(0.3)
 
 
 class Driver:
