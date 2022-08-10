@@ -18,3 +18,7 @@ class Runner(BaseProcessRunner):
 
   def export_state(self, state):
     return { "progress": 0 }
+
+  def command(self, command):
+    loop = asyncio.get_event_loop()
+    loop.create_task(self._executor.rotate(command['valve']))

@@ -30,10 +30,28 @@ class Executor(BaseExecutor):
   async def destroy(self):
     await self._driver.destroy()
 
+  async def rotate(self, valve):
+    await self._driver.rotate(valve)
+    self._host.update_callback()
+
+  def export(self):
+    return {
+      "valve": self._driver.valve,
+      "valveCount": self._driver.valve_count
+    }
+
 
 class MockDriver:
   def __init__(self):
     self._valve = 1
+
+  @property
+  def valve(self):
+    return self._valve
+
+  @property
+  def valve_count(self):
+    return 12
 
   async def initialize(self):
     await self.home()
@@ -67,6 +85,9 @@ class Driver:
     self._shutdown = False
     self._serial = None
 
+    self._valve = None
+    self._valve_count = None
+
     self._query_future = None
     self._task_future = None
 
@@ -90,6 +111,13 @@ class Driver:
 
     self._thread = Thread(target=thread)
 
+  @property
+  def valve(self):
+    return self._valve
+
+  @property
+  def valve_count(self):
+    return self._valve_count
 
   async def initialize(self):
     self._serial = Serial(self._address, timeout=0.05)
@@ -97,6 +125,9 @@ class Driver:
 
     await self._query("!502")
     await self.home()
+
+    self._valve = await self.get_valve()
+    self._valve_count = await self.get_valve_count()
 
   async def destroy(self):
     self._shutdown = True
@@ -149,6 +180,7 @@ class Driver:
 
   async def rotate(self, valve):
     await self._run(f"b{valve}R")
+    self._valve = await self.get_valve()
 
 
   async def _query(self, command, *, dtype = None):

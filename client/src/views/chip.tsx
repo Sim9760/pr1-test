@@ -6,11 +6,12 @@ import { BarNav } from '../components/bar-nav';
 import { ChipControl } from '../components/chip-control';
 import { ChipProtocol } from '../components/chip-protocol';
 import { ChipSettings } from '../components/chip-settings';
+import { RotaryValveControl } from '../components/rotary-valve-control';
 import { Pool } from '../util';
 import * as util from '../util';
 
 
-export type ViewChipMode = 'control' | 'protocol' | 'settings';
+export type ViewChipMode = 'control' | 'protocol' | 'rotary-valve-control' | 'settings';
 
 export interface ViewChipProps {
   chipId: ChipId;
@@ -64,6 +65,11 @@ export class ViewChip extends React.Component<ViewChipProps, ViewChipState> {
             chipId={this.props.chipId}
             host={this.props.host} />
         );
+        case 'rotary-valve-control': return (
+          <RotaryValveControl
+            chipId={this.props.chipId}
+            host={this.props.host} />
+        );
         case 'settings': return (
           <ChipSettings
             chipId={this.props.chipId}
@@ -80,8 +86,8 @@ export class ViewChip extends React.Component<ViewChipProps, ViewChipState> {
             entries={[
               { id: 'protocol', label: 'Protocol', icon: 'receipt_long', disabled: !this.chip.master },
               { id: 'control', label: 'Valve control', icon: 'tune' },
-              { id: 'settings', label: 'Settings', icon: 'settings' },
-              { id: 'history', label: 'History', icon: 'history', disabled: true }
+              { id: 'rotary-valve-control', label: 'Rotary valve', icon: '360' },
+              { id: 'settings', label: 'Settings', icon: 'settings' }
             ]}
             selectEntry={(mode) => {
               this.props.setRoute(['chip', this.props.chipId, mode]);
