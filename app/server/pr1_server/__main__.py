@@ -7,7 +7,7 @@ logging.basicConfig(level=logging.DEBUG, format="%(levelname)-8s :: %(name)-18s 
 
 import time
 
-if time.time() > 1660137169 + 3600 * 24 * 14:
+if time.time() > 1661271061 + 3600 * 24 * 30:
   import sys
   sys.exit(1)
 
