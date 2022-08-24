@@ -2,6 +2,8 @@ on: push
 jobs:
   build-windows:
     runs-on: windows-latest
+    env:
+      PythonVersion: 3.9.13
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
@@ -12,15 +14,27 @@ jobs:
           npm install
           npm run build
         working-directory: client
-      - name: Build the server
+      - name: Install Python
         run: |
-          python -m venv env
-          ./env/Scripts/activate
-          python setup.py install
-          pip install ../../host
-          pyinstaller --noconfirm main.spec
-          deactivate
-        working-directory: app/server
+          mkdir -p tmp/python
+          cd tmp
+          wget -O python.zip https://www.python.org/ftp/python/$PythonVersion/python-$PythonVersion-embed-amd64.zip
+          tar -xf python.zip -C python
+          echo "import site\n" >> python/*._pth
+          wget -O https://bootstrap.pypa.io/get-pip.py > python/get-pip.py
+          ./python/python.exe ./python/get-pip.py
+          ./python/Scripts/pip install ../../server
+          ./python/Scripts/pip install ../../../units/builtin ../../../units/metadata
+        working-directory: app/electron
+      # - name: Build the server
+      #   run: |
+      #     python -m venv env
+      #     ./env/Scripts/activate
+      #     python setup.py install
+      #     pip install ../../host
+      #     pyinstaller --noconfirm main.spec
+      #     deactivate
+      #   working-directory: app/server
       - name: Build and package the app
         run: |
           npm install
