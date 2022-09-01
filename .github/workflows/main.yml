@@ -32,8 +32,8 @@ jobs:
           npm run build
         working-directory: app/electron
       - run: ls app/electron/out/make
-      - run: ls app/electron/out/make/squirrel.windows
+      - run: ls app/electron/out/make/zip/squirrel.windows
       - uses: actions/upload-artifact@v3
         with:
           name: build-windows
-          path: app/electron/out/make/squirrel.windows/*
+          path: app/electron/out/make/zip/squirrel.windows/x86
