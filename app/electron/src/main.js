@@ -11,6 +11,9 @@ const { StartupWindow } = require('./startup');
 const util = require('./util');
 
 
+if (require('electron-squirrel-startup')) return app.quit();
+
+
 class CoreApplication {
   static version = 1;
 

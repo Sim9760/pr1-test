@@ -115,9 +115,6 @@ export class Startup extends React.Component<StartupProps, StartupState> {
                 </div>
                 <div className="startup-left-bar">
                   <div>Version 1.0</div>
-                  {this.state.fullDisplay && (
-                    <div>License no. <code>CF 59 AF 6E</code></div>
-                  )}
                 </div>
               </div>
             </div>

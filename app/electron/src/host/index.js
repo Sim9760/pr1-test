@@ -10,7 +10,7 @@ exports.HostWindow = class HostWindow {
     this.spec = { type: 'local' };
 
     this.window = new BrowserWindow({
-      show: false,
+      // show: false,
       webPreferences: {
         // additionalArguments: [hostSettings.id],
         preload: path.join(__dirname, 'preload.js')
@@ -18,7 +18,7 @@ exports.HostWindow = class HostWindow {
     });
 
     this.window.maximize();
-    this.window.hide();
+    // this.window.hide();
     this.window.loadFile(__dirname + '/index.html', { query: { hostSettingsId: hostSettings.id } });
 
 

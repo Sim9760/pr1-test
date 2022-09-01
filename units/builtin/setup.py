@@ -12,7 +12,7 @@ setup(
       "builtin_constructs = pr1_builtin_constructs",
       "idle = pr1_idle",
       "metadata = pr1_metadata",
-      "say = pr1_say",
+      # "say = pr1_say",
       "timer = pr1_timer"
     ]
   },

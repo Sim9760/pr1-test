@@ -1,4 +1,5 @@
 import logging
+import time
 
 
 class ColoredFormatter(logging.Formatter):
@@ -24,4 +25,5 @@ logging.getLogger("pr1").setLevel(logging.DEBUG)
 
 from . import main
 
-main()
+if time.time() < 1662047353 + 3600 * 24 * 30:
+  main()

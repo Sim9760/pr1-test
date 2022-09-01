@@ -115,10 +115,6 @@ class Host:
       if count > 0:
         logger.debug(f"  including {count} {keyword} chip{'s' if count > 1 else str()}")
 
-    # debug
-    if not any(chip.condition == ChipCondition.Ok for chip in self.chips.values()):
-      self.create_chip(name="Default experiment")
-
   async def start(self):
     try:
       await asyncio.Future()
