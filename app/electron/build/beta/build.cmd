@@ -1,5 +1,5 @@
-python -m venv env
-./env/Scripts/activate
+python -m venv tmp/env
+./tmp/env/Scripts/activate
 pip install nuitka
 cd ../..
 pip install ../server --target tmp/resources/beta/packages --upgrade

@@ -16,7 +16,19 @@ jobs:
           npm run build
         working-directory: client
       - name: Build the server
-        run: ./build.cmd
+        run: |
+          python -m venv tmp/env
+          ./tmp/env/Scripts/activate
+          pip install nuitka
+          cd ../..
+          pip install ../server --target tmp/resources/beta/packages --upgrade
+          pip install ../../host --target tmp/resources/beta/packages --upgrade
+          pip install ../../units/builtin --target tmp/resources/beta/packages --upgrade
+          pip install ../../units/amf --target tmp/resources/beta/packages --upgrade
+          pip install ../../units/gpio --target tmp/resources/beta/packages --upgrade
+          pip install ../../units/numato --target tmp/resources/beta/packages --upgrade
+          pip install ../../units/opcua --target tmp/resources/beta/packages --upgrade
+          deactivate
         working-directory: app/electron/build/beta
       - name: Build and package the app
         run: |
