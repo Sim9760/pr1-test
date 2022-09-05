@@ -1,7 +1,7 @@
 module.exports = {
   packagerConfig: {
     extraResource: [
-      'tmp/resources/alpha',
+      // 'tmp/resources/alpha',
       'tmp/resources/beta'
     ],
     ignore: [
