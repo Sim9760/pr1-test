@@ -1,4 +1,11 @@
-exports.Pool = class Pool {
+const childProcess = require('child_process');
+const fs = require('fs/promises');
+const { app } = require('electron');
+const path = require('path');
+const which = require('which');
+
+
+class Pool {
   constructor() {
     this._promises = new Set();
   }
@@ -22,4 +29,110 @@ exports.Pool = class Pool {
       await Promise.allSettled(this._promises);
     }
   }
-};
+}
+
+
+async function findPythonInstallations() {
+  let possiblePythonLocations = [
+    'python3',
+    'python',
+    '/Applications/Xcode.app/Contents/Developer/usr/bin/python3',
+    '/opt/homebrew/bin/python3',
+    '/usr/local/bin/python3'
+  ];
+
+  let condaList = await runCommand('conda env list --json', { ignoreError: true });
+
+  if (condaList) {
+    possiblePythonLocations.push(...JSON.parse(condaList[0]).envs.map((env) => path.join(env, 'bin/python')));
+  }
+
+  possiblePythonLocations = (await Promise.all(
+    possiblePythonLocations.map(async (possibleLocation) => await which(possibleLocation).catch(() => null))
+  )).filter((possibleLocation, index, arr) => possibleLocation && (arr.indexOf(possibleLocation) === index));
+
+  return (await Promise.all(possiblePythonLocations.map(async (possibleLocation) => {
+    let [stdout, stderr] = await runCommand(`${possibleLocation} --version`);
+    let match = /^Python (\d+)\.(\d+)\.(\d+)\n$/.exec(stdout || stderr);
+
+    if (match) {
+      let major = parseInt(match[1]);
+      let minor = parseInt(match[2]);
+      let patch = parseInt(match[3]);
+
+      return {
+        location: possibleLocation,
+        version: [major, minor, patch]
+      };
+    }
+
+    return null;
+  }))).filter((installation) => installation);
+}
+
+async function fsExists(path) {
+  try {
+    await fs.stat(path)
+  } catch (err) {
+    if (err.code === 'ENOENT') {
+      return false;
+    }
+
+    throw err;
+  }
+
+  return true;
+}
+
+async function fsMkdir(dirPath) {
+  if (!(await fsExists(dirPath))) {
+    await fs.mkdir(dirPath, { recursive: true });
+  }
+}
+
+async function getLocalHostModels() {
+  let alphaPath = this.getResourcePath('alpha');
+  let betaPath = this.getResourcePath('beta');
+
+  return {
+    alpha: await fsExists(alphaPath)
+      ? { executablePath: path.join(alphaPath, 'contents/contents') }
+      : null,
+    beta: await fsExists(betaPath)
+      ? {
+        packagesPath: path.join(betaPath, 'packages'),
+        version: (await fs.readFile(path.join(betaPath, 'version.txt'))).toString().split('.').map((seg) => parseInt(seg))
+      }
+      : null
+  };
+}
+
+function getResourcePath(relativePath) {
+  return app.isPackaged
+    ? path.join(process.resourcesPath, relativePath)
+    : path.join(__dirname, '../tmp/resources', relativePath);
+}
+
+async function runCommand(command, options) {
+  return await new Promise((resolve, reject) => {
+    childProcess.exec(command, (err, stdout, stderr) => {
+      if (err) {
+        if (options.ignoreError) {
+          resolve(null);
+        } else {
+          reject(err);
+        }
+      } else {
+        resolve([stdout, stderr]);
+      }
+    });
+  });
+}
+
+
+exports.Pool = Pool;
+exports.findPythonInstallations = findPythonInstallations;
+exports.fsExists = fsExists;
+exports.getResourcePath = getResourcePath;
+exports.getLocalHostModels = getLocalHostModels;
+exports.fsMkdir = fsMkdir;
