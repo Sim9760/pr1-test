@@ -14,6 +14,11 @@ module.exports = {
     icon: 'icon.icns'
   },
   makers: [
-    { name: '@electron-forge/maker-zip' }
+    { name: '@electron-forge/maker-zip' },
+    { name: '@electron-forge/maker-squirrel',
+      config: {
+        authors: 'AdaptyvBio',
+        description: 'Protocol Runner 1'
+      } }
   ]
 }
