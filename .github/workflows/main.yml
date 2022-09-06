@@ -3,6 +3,8 @@ jobs:
   build-windows:
     runs-on: windows-latest
     steps:
+      - name: core.symlinks
+        run: git config --global core.symlinks true
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:

@@ -53,7 +53,7 @@ async function findPythonInstallations() {
 
   return (await Promise.all(possiblePythonLocations.map(async (possibleLocation) => {
     let [stdout, stderr] = await runCommand(`${possibleLocation} --version`);
-    let match = /^Python (\d+)\.(\d+)\.(\d+)\n$/.exec(stdout || stderr);
+    let match = /^Python (\d+)\.(\d+)\.(\d+)\r?\n$/.exec(stdout || stderr);
 
     if (match) {
       let major = parseInt(match[1]);
