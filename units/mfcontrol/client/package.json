@@ -11,6 +11,7 @@
   "devDependencies": {
     "@types/react": "^18.0.16",
     "esbuild": "^0.14.53",
-    "pr1": "file:../../../client"
+    "pr1": "file:../../../client",
+    "sass": "^1.54.4"
   }
 }
