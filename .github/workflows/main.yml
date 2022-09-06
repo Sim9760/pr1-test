@@ -18,10 +18,10 @@ jobs:
       - name: Build the client of each unit
         run: |
           foreach ($d in dir */client) { pushd $d; npm install; npm run build; popd }
-          ls units\\amf\\src\\pr1_amf
-          ls units\\amf\\client\\dist\\amf
-          copy-item units\\amf\\client\\dist\\amf -destination units\\amf\\src\\pr1_amf\\client2 -recurse
-          ls units\\amf\\src\\pr1_amf
+          ls amf\\src\\pr1_amf
+          ls amf\\client\\dist\\amf
+          copy-item amf\\client\\dist\\amf -destination amf\\src\\pr1_amf\\client2 -recurse
+          ls amf\\src\\pr1_amf
         working-directory: units
       - name: Build the server
         run: |
