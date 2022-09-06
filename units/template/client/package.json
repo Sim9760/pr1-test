@@ -3,7 +3,7 @@
     "build": "npm run build:css && npm run build:js && npm run build:python",
     "build:css": "sass styles:dist --no-source-map",
     "build:js": "esbuild --bundle src/*/index.tsx --external:*.css --external:pr1 --external:react --format=esm --outbase=src --outdir=dist",
-    "build:python": "find dist -maxdepth 1 -mindepth 1 -exec touch {}/__init__.py \\;"
+    "build:python": "python3 -c \"for d in __import__('pathlib').Path('dist').glob('*'): (d / '__init__.py').open('w')\""
   },
   "devDependencies": {
     "@types/react": "^18.0.16",

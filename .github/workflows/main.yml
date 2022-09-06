@@ -3,8 +3,6 @@ jobs:
   build-windows:
     runs-on: windows-latest
     steps:
-      - name: core.symlinks
-        run: git config --global core.symlinks true
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
@@ -17,6 +15,9 @@ jobs:
           npm install
           npm run build
         working-directory: client
+      - name: Build the client of each unit
+        run: foreach ($d in dir */client) { pushd $d; npm install; npm run build; popd }
+        working-directory: units
       - name: Build the server
         run: |
           python -m venv tmp/env
