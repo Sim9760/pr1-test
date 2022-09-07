@@ -1,0 +1,52 @@
+on: push
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - name: Build the client
+        run: |
+          npm install
+          npm run build
+        working-directory: client
+      - name: Build the client of each unit
+        run: |
+          foreach ($d in dir */client) { pushd $d; npm install; npm run build; popd }
+          pushd builtin/client; npm run deref; popd
+        working-directory: units
+      - name: Build the server
+        run: |
+          python -m venv tmp/env
+          ./tmp/env/Scripts/activate
+          cd ../..
+          pip install ../server --target tmp/resources/beta/packages --upgrade
+          pip install ../../host --target tmp/resources/beta/packages --upgrade
+          pip install ../../units/builtin --target tmp/resources/beta/packages --upgrade
+          pip install ../../units/amf --target tmp/resources/beta/packages --upgrade
+          pip install ../../units/mfcontrol --target tmp/resources/beta/packages --upgrade
+          pip install ../../units/numato --target tmp/resources/beta/packages --upgrade
+          pip install ../../units/opcua --target tmp/resources/beta/packages --upgrade
+          deactivate
+          python --version > tmp/resources/beta/version.txt
+        working-directory: app/electron/build/beta
+      - name: Build and package the app
+        run: |
+          npm install
+          npm run build
+        working-directory: app/electron
+      - run: ls app/electron/out/make
+      - run: ls app/electron/out/make/zip
+      - uses: actions/upload-artifact@v3
+        with:
+          name: build-windows
+          path: app/electron/out/make/squirrel.windows
+      # - uses: actions/upload-artifact@v3
+      #   with:
+      #     name: build-zip
+      #     path: app/electron/out/make/zip
