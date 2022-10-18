@@ -1,12 +1,45 @@
 on: push
 jobs:
+  build-macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - name: Build the client
+        run: |
+          npm install
+          npm run build
+        working-directory: client
+      - name: Build the client of each unit
+        run: for d in */client; do cd $d; npm install; npm run build; cd -; done
+        working-directory: units
+      - name: Build the server
+        run: npm run build:host
+        working-directory: app/electron
+      - name: Build and package the app
+        run: |
+          npm install
+          npm run build
+          npm run make
+        working-directory: app/electron
+      - run: ls app/electron/out/make/zip/darwin
+      - uses: actions/upload-artifact@v3
+        with:
+          name: build-macos
+          path: app/electron/out/make/zip/darwin/x64/*.zip
+
   build-windows:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: 16
       - uses: actions/setup-python@v4
         with:
           python-version: '3.10'
@@ -39,14 +72,9 @@ jobs:
         run: |
           npm install
           npm run build
+          npm run make
         working-directory: app/electron
-      - run: ls app/electron/out/make
-      - run: ls app/electron/out/make/zip
       - uses: actions/upload-artifact@v3
         with:
           name: build-windows
-          path: app/electron/out/make/squirrel.windows
-      # - uses: actions/upload-artifact@v3
-      #   with:
-      #     name: build-zip
-      #     path: app/electron/out/make/zip
+          path: app/electron/out/make/squirrel.windows/x64/*Setup.exe
