@@ -1,13 +1,14 @@
+import asyncio
+import traceback
+import uuid
 from collections import namedtuple
 from enum import IntEnum
-import uuid
 
 from pr1.chip import DegradedChipRunnerError
 from pr1.units.base import BaseRunner
 
 from . import namespace
 from .model import Model
-
 
 Valve = namedtuple("Valve", ['host_valve_index'])
 
@@ -78,6 +79,18 @@ class Runner(BaseRunner):
       self._valve_map = data["valveMap"]
       await self._write()
       self._chip.update_runners(namespace)
+
+  def enter_segment(self, segment, seg_index):
+    valves = segment[namespace]['valves']
+    self._signal = sum([1 << channel_index for channel_index in valves])
+
+    async def write():
+      try:
+        await self._write()
+      except Exception:
+        traceback.print_exc()
+
+    asyncio.create_task(write())
 
   def export(self):
     def get_valve_state(channel_index):
