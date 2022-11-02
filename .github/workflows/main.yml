@@ -78,3 +78,27 @@ jobs:
         with:
           name: build-windows
           path: app/electron/out/make/squirrel.windows/x64/*Setup.exe
+
+  upload:
+    runs-on: ubuntu-latest
+    needs: [build-macos, build-windows]
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: arn:aws:iam::223838961905:role/github_actions_permision_role
+          aws-region: eu-central-1
+      - run: mkdir -p builds
+      - uses: actions/download-artifact@v3
+        with:
+          name: build-macos
+          path: builds/macos
+      - uses: actions/download-artifact@v3
+        with:
+          name: build-windows
+          path: builds/windows
+      - run: ls -R
+      - run: aws s3 sync builds s3://scheduler-app-builds
