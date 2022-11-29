@@ -65,6 +65,7 @@ jobs:
           pip install ../../units/mfcontrol --target tmp/resources/beta/packages --upgrade
           pip install ../../units/numato --target tmp/resources/beta/packages --upgrade
           pip install ../../units/opcua --target tmp/resources/beta/packages --upgrade
+          pip install ../../units/okolab --target tmp/resources/beta/packages --upgrade
           deactivate
           python --version > tmp/resources/beta/version.txt
         working-directory: app/electron/build/beta
