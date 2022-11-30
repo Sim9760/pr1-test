@@ -50,6 +50,8 @@ export class ProtocolTimeline extends React.Component<ProtocolTimelineProps, { w
 
     // Input
 
+    let stepIndex = 0;
+
     let data = {
       segments: this.props.protocol.stages
         .flatMap((stage) => stage.steps)
@@ -65,9 +67,13 @@ export class ProtocolTimeline extends React.Component<ProtocolTimelineProps, { w
           };
         }),
       stages: this.props.protocol.stages.map((stage) => {
+        let seq = [stepIndex, 0];
+        stepIndex += stage.steps.length;
+        seq[1] = stepIndex;
+
         return {
           name: stage.name,
-          seq: stage.seq
+          seq: seq
         };
       })
     };

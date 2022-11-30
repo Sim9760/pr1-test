@@ -18,6 +18,7 @@ int main() {
 %(points_code)s
 
   SelectOptConf("%(optconf)s");
+  // Stg_Light_SetState("DIA", 1);
   Stg_SetNosepieceObjective("%(objective)s");
   Camera_ExposureSet(%(exposure)f);
 
