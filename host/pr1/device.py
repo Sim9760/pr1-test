@@ -19,7 +19,7 @@ class DeviceInformation:
 class BooleanNode:
   def export(self):
     return {
-      "type": "boolean",
+      "type": self.value_type,
       "targetValue": self.target_value,
       "value": self.value
     }

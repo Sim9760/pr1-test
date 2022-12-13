@@ -24,7 +24,7 @@ class Executor(BaseExecutor):
     if not self._device:
       try:
         self._device = OkolabDevice(address=self._conf['address'])
-        await self._device.set_device1(self._conf['type'])
+        await self._device.set_device1(None)
       except OkolabDeviceDisconnectedError:
         logger.error("Disconnected device")
 

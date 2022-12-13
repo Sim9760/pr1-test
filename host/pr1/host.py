@@ -77,10 +77,13 @@ class Host:
 
     logger.info(f"Loaded {len(self.manager.units)} units")
 
-    self.executors = {
-      name: unit.Executor(self.manager.units_info[name].options, host=self) for name, unit in self.manager.units.items() if hasattr(unit, 'Executor')
-    }
-
+    try:
+      self.executors = {
+        name: unit.Executor(self.manager.units_info[name].options, host=self) for name, unit in self.manager.units.items() if hasattr(unit, 'Executor')
+      }
+    except reader.LocatedError as e:
+      e.display()
+      sys.exit(1)
 
   @property
   def ordered_namespaces(self):

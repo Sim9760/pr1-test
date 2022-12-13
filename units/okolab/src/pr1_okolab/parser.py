@@ -15,6 +15,10 @@ class Parser(BaseParser):
   def handle_segment(self, data_segment):
     if "temperature" in data_segment:
       raw_value = data_segment["temperature"][0]
+
+      if raw_value == "nil":
+        return { namespace: { 'value': None } }
+
       value = sc.ParseType(int).transform(raw_value)
 
       if not (25 <= value <= 60):

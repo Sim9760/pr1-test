@@ -18,24 +18,22 @@ class Runner(BaseRunner):
     self._executor: Executor = host.executors[namespace]
 
   def enter_segment(self, segment, seg_index):
-    async def run(value: Optional[float]):
-      try:
-        device = await self._executor.get_device()
-
-        if device:
-          try:
-            if value is not None:
-              await device.set_device1(self._executor._conf['type'])
-              await device.set_temperature_setpoint1(value)
-            else:
-              await device.set_device1(None)
-          except OkolabDeviceDisconnectedError:
-            logger.error("Disconnected device")
-      except Exception:
-        traceback.print_exc()
-
     if namespace in segment:
-      asyncio.create_task(run(segment[namespace]['value']))
+      async def run():
+        try:
+          host = self._executor._host
+
+          for device_id, node_id, value in segment[namespace]['assignments']:
+            try:
+              device = host.devices[device_id]
+              node = next(node for node in device.nodes if node.id == node_id)
+              await node.write(value)
+            except Exception:
+              traceback.print_exc()
+        except Exception:
+          traceback.print_exc()
+
+      asyncio.create_task(run())
 
   def import_state(self, data_state):
     return dict()

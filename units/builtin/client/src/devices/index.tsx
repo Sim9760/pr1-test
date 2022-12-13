@@ -94,20 +94,32 @@ function DevicesTab(props: ChipTabComponentProps) {
                 }
 
                 case 'scalar': {
+                  let targetValue = (data.targetValue !== null ? data.targetValue.toString() : '');
+                  let [value, setValue] = React.useState(targetValue);
+
                   return (
                     <Form.TextField
                       label={label}
-                      // onInput={(value) => {
-                      //   props.host.backend.instruct({
-                      //     [namespace]: {
-                      //       type: 'setValue',
-                      //       deviceId: device.id,
-                      //       nodeIndex: nodeIndex,
-                      //       value: parseFloat(value)
-                      //     }
-                      //   });
-                      // }}
-                      value={data.targetValue !== null ? data.targetValue.toString() : ''}
+                      onBlur={() => {
+                        let newValue = parseFloat(value);
+
+                        if (newValue === newValue) {
+                          props.host.backend.instruct({
+                            [namespace]: {
+                              type: 'setValue',
+                              deviceId: device.id,
+                              nodeIndex: nodeIndex,
+                              value: newValue
+                            }
+                          });
+
+                          setValue(newValue.toString());
+                        } else {
+                          setValue(targetValue);
+                        }
+                      }}
+                      onInput={(value) => void setValue(value)}
+                      value={value}
                       key={node.id} />
                   );
                 }
@@ -149,4 +161,16 @@ function DevicesTab(props: ChipTabComponentProps) {
       ))}
     </main>
   );
+}
+
+
+export function createFeatures(options: any) {
+  let segmentData = options.segment.data[namespace];
+
+  return segmentData
+    ? segmentData.assignments.map(([deviceId, nodeId, value]) => ({
+      icon: 'monitor_heart',
+      label: `${deviceId}.${nodeId} = ${value}`
+    }))
+    : [];
 }

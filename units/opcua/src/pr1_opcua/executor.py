@@ -14,9 +14,9 @@ logging.getLogger("asyncua.client.client").setLevel(logging.WARNING)
 
 variants_map = {
   'bool': ua.VariantType.Boolean,
-  # 'i32': ua.VariantType.Int32,
-  # 'f32': ua.VariantType.Float,
-  # 'f64': ua.VariantType.Double
+  'i32': ua.VariantType.Int32,
+  'f32': ua.VariantType.Float,
+  'f64': ua.VariantType.Double
 }
 
 conf_schema = sc.Schema({
@@ -49,6 +49,12 @@ class DeviceNode(BooleanNode):
     self._node = node
     self._variant = variants_map[type]
 
+  @property
+  def value_type(self):
+    match self.type:
+      case 'bool': return "boolean"
+      case _: return "scalar"
+
   async def _connect(self):
     try:
       self.value = await self._node.get_value()
@@ -67,6 +73,10 @@ class DeviceNode(BooleanNode):
     self.target_value = value
 
     if self.connected:
+      match self.type:
+        case 'i32': value = int(value)
+        case 'f32' | 'f64': value = float(value)
+
       await self._node.write_value(ua.DataValue(value))
       self.value = value
 
@@ -90,7 +100,7 @@ class Device:
     self._node_ids = { node['id']: node_index for node_index, node in enumerate(nodes_conf) }
     self.nodes = [
       DeviceNode(
-        id=node_conf['id'],
+        id=node_conf['id'].value,
         label=node_conf.get('label'),
         node=self._client.get_node(node_conf['location'].value),
         type=node_conf['type']
@@ -191,7 +201,7 @@ class Executor(BaseExecutor):
     self._host = host
 
     for device_conf in conf.get('devices', list()):
-      device_id = device_conf['id']
+      device_id = device_conf['id'].value
 
       if device_id in self._host.devices:
         raise device_id.error(f"Duplicate device id '{device_id}'")

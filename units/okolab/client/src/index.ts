@@ -7,7 +7,7 @@ export function createFeatures(options: any) {
   return segmentData
     ? [{
       icon: 'thermostat',
-      label: `${segmentData.value}°C`
+      label: segmentData.value !== null ? `${segmentData.value}°C` : 'N/A'
     }]
     : [];
 }

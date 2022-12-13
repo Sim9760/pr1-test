@@ -9,6 +9,7 @@ from .. import logger, namespace
 
 class RelayBoardNode(BooleanNode):
   def __init__(self, index, device):
+    self.value_type = "boolean"
     self.unwritable = False
 
     self._device = device
