@@ -14,7 +14,12 @@ logging.getLogger("asyncua.client.client").setLevel(logging.WARNING)
 
 variants_map = {
   'bool': ua.VariantType.Boolean,
+  'i16': ua.VariantType.Int16,
   'i32': ua.VariantType.Int32,
+  'i64': ua.VariantType.Int64,
+  'u16': ua.VariantType.UInt16,
+  'u32': ua.VariantType.UInt32,
+  'u64': ua.VariantType.UInt64,
   'f32': ua.VariantType.Float,
   'f64': ua.VariantType.Double
 }
@@ -74,10 +79,10 @@ class DeviceNode(BooleanNode):
 
     if self.connected:
       match self.type:
-        case 'i32': value = int(value)
+        case 'i16' | 'i32' | 'i64' | 'u16' | 'u32' | 'u64': value = int(value)
         case 'f32' | 'f64': value = float(value)
 
-      await self._node.write_value(ua.DataValue(value))
+      await self._node.write_value(ua.DataValue(ua.Variant(value, self._variant)))
       self.value = value
 
 
