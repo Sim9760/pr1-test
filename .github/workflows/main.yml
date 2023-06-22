@@ -26,12 +26,6 @@ jobs:
           npm install
           npm run build
         working-directory: client
-      - name: Build the client of each unit
-        run: for d in */client; do cd $d; npm install; npm run build; cd -; done
-        working-directory: units
-      - name: Build the server
-        run: npm run build:host
-        working-directory: app/electron
       - name: Build and package the app
         run: |
           npm install
@@ -70,22 +64,6 @@ jobs:
           npm install
           npm run build
         working-directory: client
-      - name: Build the client of each unit
-        run: |
-          foreach ($d in dir */client) { pushd $d; npm install; npm run build; popd }
-          pushd core/client; npm run deref; popd
-        working-directory: units
-      - name: Build the server
-        run: |
-          pip3 wheel --no-deps --wheel-dir packages ../server
-          pip3 wheel --no-deps --wheel-dir packages ../../host
-          pip3 wheel --no-deps --wheel-dir packages ../../units/core
-          pip3 wheel --no-deps --wheel-dir packages ../../units/amf
-          pip3 wheel --no-deps --wheel-dir packages ../../units/okolab
-          pip3 wheel --no-deps --wheel-dir packages ../../units/opcua
-          pip3 wheel --no-deps --wheel-dir packages ../../units/expect
-          pip3 wheel --no-deps --wheel-dir packages ../../units/record
-        working-directory: app/electron
       - name: Build and package the app
         run: |
           npm install
