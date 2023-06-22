@@ -36,7 +36,7 @@
     "@types/react-dom": "^18.0.5",
     "@types/wicg-file-system-access": "^2020.9.5",
     "esbuild": "~0.17.0",
-    "esbuild-sass-plugin": "^2.9.0",
+    "esbuild-sass-plugin": "~2.9.0",
     "madge": "^5.0.1",
     "postcss": "^8.4.16",
     "postcss-modules": "^5.0.0",
