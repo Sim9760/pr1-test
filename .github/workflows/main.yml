@@ -1,16 +1,15 @@
 on: push
 jobs:
   build-macos:
-    runs-on: macos-latest
+    strategy:
+      matrix:
+        os: [macos-latest, ARM64]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
-          node-version: 18
-      - uses: actions/setup-python@v4
-        with:
-          python-version: '3.11'
-      - run: pip3 install wheel
+          node-version: '18'
       - name: Build the shared package
         run: |
           npm install
@@ -36,7 +35,7 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: build-macos
-          path: app/electron/out/make/zip/darwin/x64/*.zip
+          path: app/electron/out/make/zip/darwin/*/*.zip
 
   build-windows:
     runs-on: windows-latest
@@ -44,11 +43,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
-          node-version: 18
-      - uses: actions/setup-python@v4
-        with:
-          python-version: '3.11'
-      - run: pip3 install wheel
+          node-version: '18'
       - name: Build the shared package
         run: |
           npm install
